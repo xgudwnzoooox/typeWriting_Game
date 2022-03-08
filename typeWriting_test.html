@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>typeWriting_Test</title>
+  <style>
+    body{
+      background-color: gray;
+    }
+
+    #result{
+      background-color: aliceblue;
+      display: inline;
+    }
+  </style>
+</head>
+<body>
+  <form id="startForm">
+    <input type="text" id="userName" placeholder="닉네임을 입력하세요">
+    <button id="enter">입력</button>
+  </form>
+
+  <div id="result"></div>
+  <div id="testText"></div>
+  
+  <input type="text" id = 'testForm' onkeydown="if(window.event.keyCode==13){onClickEnter()}" autofocus>
+  
+<script>
+  const $testForm = document.querySelector('#testForm');
+  const $result = document.querySelector('#result');
+  const $testText = document.querySelector('#testText');
+  const $startForm = document.querySelector('#startForm');
+  const $userName = document.querySelector('#userName');
+  
+  const data = ['하몽','루쏘','우디','냥몽','피그','여름','버즈','알린','토토로','포키'];
+
+
+  //데이터
+
+  // 데이터 storage reset
+  // localStorage.setItem("userId", JSON.stringify([]));
+  // localStorage.setItem("userInfo_Object", JSON.stringify([]));
+
+  const output1 = localStorage.getItem("userId");		
+  const output2 = localStorage.getItem("userInfo_Object");		
+
+  const userId = JSON.parse(output1);
+  const userInfo_Object = JSON.parse(output2);
+
+  console.log(userId, '유저 이름 데이터') // [1,2,3,4,5]
+  console.log(userInfo_Object, '유저 정보 데이터') // [1,2,3,4,5]
+
+  class userInfo{
+    constructor(name){
+      this.name = name;
+      this.highestScore = 0;
+    }
+  }
+
+
+  $startForm.addEventListener('submit',(event)=> {
+    event.preventDefault();
+    const testText = data[Math.floor(Math.random() * data.length)];
+    $testText.textContent = testText;
+
+    //입력한 유저 이름이 기존에 있던 이름인지 확인하기
+    const $userName = event.target[0].value;
+    if((userId.indexOf($userName)=== -1)){//데이터에 이름이 없을 때(신규유저)
+
+      //신규 유저일 때 회원정보 이름이랑 회원정보(이름,최고 점수 등)가 들어있는 데이터 만들기
+      userId.push(`${$userName}`);
+      userInfo_Object.push(new userInfo($userName));
+      $result.textContent = `이름 : ${userInfo_Object[userId.indexOf($userName)].name} / 현재 점수 : 0점 / 최고 점수: ${userInfo_Object[userId.indexOf($userName)].highestScore}`
+
+      //데이터 storage 저장
+      localStorage.setItem("userId", JSON.stringify(userId));
+      localStorage.setItem("userInfo_Object", JSON.stringify(userInfo_Object));
+    }else{
+      console.log(userId.indexOf($userName));
+      console.log(userInfo_Object[userId.indexOf($userName)]);
+      $result.textContent = `이름 : ${userInfo_Object[userId.indexOf($userName)].name} / 현재 점수 : 0점 / 최고 점수: ${userInfo_Object[userId.indexOf($userName)].highestScore}`
+
+    }
+
+    $testForm.focus();
+  })
+
+    
+
+    // ※ 배열형식 저장
+
+    // var arr = [1,2,3,4,5]
+
+    // localStorage.setItem("key", JSON.stringify(arr));
+
+
+
+    // ※ 저장된 배열형식 출력
+
+    // var output = localStorage.getItem("key");		
+
+    // var arr = JSON.parse(output);
+
+    // console.log(arr) // [1,2,3,4,5]
+
+  let nowScore = 0;
+
+  function checkAnswer(){
+    const $inputValue = $userName.value;
+    console.log($testForm.value,'1', $testText.textContent,'2');
+    console.log($testForm.value === $testText.textContent);
+    if($testForm.value === $testText.textContent){
+      ++nowScore;
+      console.log(nowScore);
+      $result.textContent = `이름 : ${userInfo_Object[userId.indexOf($inputValue)].name} 점 / 현재 점수 : ${nowScore} 점 / 최고 점수: ${userInfo_Object[userId.indexOf($inputValue)].highestScore} 점`
+    }else{
+      if(nowScore > userInfo_Object[userId.indexOf($inputValue)].highestScore){
+
+        userInfo_Object[userId.indexOf($inputValue)].highestScore = nowScore;
+
+        localStorage.setItem("userInfo_Object", JSON.stringify(userInfo_Object));
+
+        alert('게임끝');
+        $userName.value ='';
+        $result.textContent = `이름 : ${userInfo_Object[userId.indexOf($inputValue)].name} 점 / 현재 점수 : ${nowScore} 점 / 최고 점수: ${userInfo_Object[userId.indexOf($inputValue)].highestScore} 점`
+
+      }else{
+
+        alert('게임끝');
+        $userName.value ='';
+        $result.textContent = `이름 : ${userInfo_Object[userId.indexOf($inputValue)].name} 점 / 현재 점수 : ${nowScore} 점 / 최고 점수: ${userInfo_Object[userId.indexOf($inputValue)].highestScore} 점`
+
+
+      }
+    }
+
+  }
+
+
+  function onClickEnter() {
+
+      //단어 맞는지 확인
+      //결과보고 결과화면 창 출력(이름, 현재 점수, 최고 점수)
+      //다음 단어 출력
+      
+      checkAnswer();
+      $testForm.value = '';
+
+      //다음 단어
+      const testText = data[Math.floor(Math.random() * data.length)];
+      $testText.textContent = testText;
+  }
+</script>
+</body>
+</html>
